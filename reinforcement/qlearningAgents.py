@@ -105,16 +105,15 @@ class PacmanQAgent(QLearningAgent):
         self.index = 0  # This is always Pacman
         QLearningAgent.__init__(self, **args)
 
+# ---------------------Q4---------------------#
     def getAction(self, state):
-        """
-        Simply calls the getAction method of QLearningAgent and then
-        informs parent of action for Pacman.  Do not change or remove this
-        method.
-        """
-        action = QLearningAgent.getAction(self,state)
-        self.doAction(state,action)
-        return action
-
+        actions = self.getLegalActions(state)
+        if not actions:
+            return None
+        if util.flipCoin(self.epsilon):
+            return random.choice(actions)
+        return self.computeActionFromQValues(state)
+#---------------------Q4---------------------#
 class ApproximateQAgent(PacmanQAgent):
     """
        ApproximateQLearningAgent
