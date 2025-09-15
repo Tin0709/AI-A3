@@ -111,8 +111,13 @@ class PacmanQAgent(QLearningAgent):
         if not actions:
             return None
         if util.flipCoin(self.epsilon):
-            return random.choice(actions)
-        return self.computeActionFromQValues(state)
+            action = random.choice(actions)
+        else:
+            action = self.computeActionFromQValues(state)
+        # --------------Q5-----------#
+        self.doAction(state, action)
+        # --------------Q5-----------#
+        return action
 #---------------------Q4---------------------#
 class ApproximateQAgent(PacmanQAgent):
     """
