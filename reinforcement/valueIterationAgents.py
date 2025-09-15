@@ -59,12 +59,59 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
         self.runValueIteration()
 
+#-------------------- Question 1 ------------------#
     def runValueIteration(self):
         """
-          Run the value iteration algorithm. Note that in standard
-          value iteration, V_k+1(...) depends on V_k(...)'s.
+        Run K steps of *batch* value iteration.
+        Batch = compute V_{k+1} from a frozen copy of V_k for all states,
+        then replace self values at the end of the sweep.
         """
-        "*** YOUR CODE HERE ***"
+        for _ in range(self.iterations):
+            newValues = util.Counter()  # defaults to 0
+            for s in self.mdp.getStates():
+                # Terminal or no actions -> value is 0 by convention
+                if self.mdp.isTerminal(s):
+                    newValues[s] = 0.0
+                    continue
+                actions = self.mdp.getPossibleActions(s)
+                if not actions:
+                    newValues[s] = 0.0
+                    continue
+                # Bellman optimality backup using *old* self.values
+                q_candidates = [self.computeQValueFromValues(s, a) for a in actions]
+                newValues[s] = max(q_candidates)
+            # commit the batch
+            self.values = newValues
+
+    def computeQValueFromValues(self, state, action):
+        """
+        Q(s,a) = sum_{s'} P(s'|s,a) * [ R(s,a,s') + gamma * V(s') ]
+        Uses current self.values (i.e., V_k).
+        """
+        q = 0.0
+        for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            reward = self.mdp.getReward(state, action, nextState)
+            q += prob * (reward + self.discount * self.values[nextState])
+        return q
+
+    def computeActionFromValues(self, state):
+        """
+        Return argmax_a Q(s,a) under current self.values.
+        If terminal or no legal actions, return None.
+        """
+        if self.mdp.isTerminal(state):
+            return None
+        actions = self.mdp.getPossibleActions(state)
+        if not actions:
+            return None
+        # compute best action by Q-value
+        best_action, best_val = None, float("-inf")
+        for a in actions:
+            q = self.computeQValueFromValues(state, a)
+            if q > best_val:
+                best_val, best_action = q, a
+        return best_action
+    # -------------------- Question 1 ------------------#
 
     def getValue(self, state):
         """
@@ -72,25 +119,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         return self.values[state]
 
-    def computeQValueFromValues(self, state, action):
-        """
-          Compute the Q-value of action in state from the
-          value function stored in self.values.
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
-    def computeActionFromValues(self, state):
-        """
-          The policy is the best action in the given state
-          according to the values currently stored in self.values.
-
-          You may break ties any way you see fit.  Note that if
-          there are no legal actions, which is the case at the
-          terminal state, you should return None.
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
