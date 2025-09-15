@@ -134,21 +134,30 @@ class ApproximateQAgent(PacmanQAgent):
     def getWeights(self):
         return self.weights
 
+# ---------------------Q6---------------------#
     def getQValue(self, state, action):
         """
-          Should return Q(state,action) = w * featureVector
-          where * is the dotProduct operator
+        Approximate Q(s,a) = sum_f w_f * f_f(s,a)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        features = self.featExtractor.getFeatures(state, action)
+        q = 0.0
+        for f, val in features.items():
+            q += self.weights[f] * val
+        return q
 
-    def update(self, state, action, nextState, reward: float):
+    def update(self, state, action, nextState, reward):
         """
-           Should update your weights based on transition
+        w_f <- w_f + alpha * difference * f_f(s,a)
+        where difference = [r + gamma * max_a' Q(nextState, a')] - Q(state, action)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # temporal-difference target - current estimate
+        next_v = self.computeValueFromQValues(nextState)  # uses self.getQValue under the hood
+        diff = (reward + self.discount * next_v) - self.getQValue(state, action)
 
+        features = self.featExtractor.getFeatures(state, action)
+        for f, val in features.items():
+            self.weights[f] += self.alpha * diff * val
+# ---------------------Q6---------------------#
     def final(self, state):
         """Called at the end of each game."""
         # call the super-class final method
