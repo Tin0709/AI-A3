@@ -69,6 +69,31 @@ def question2e():
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
+def question2a():
+    # Prefer the close exit (+1), risking the cliff (-10)
+    # Make the agent short-sighted and deterministic.
+    return 0.2, 0.0, 0.0
+
+def question2b():
+    # Prefer the close exit (+1), but avoid the cliff (-10)
+    # Still short-sighted (so +1 beats +10), but with some noise so risky paths look worse.
+    return 0.2, 0.2, 0.0
+
+def question2c():
+    # Prefer the distant exit (+10), risking the cliff (-10)
+    # Value future rewards highly and move deterministically.
+    return 0.9, 0.0, 0.0
+
+def question2d():
+    # Prefer the distant exit (+10), avoiding the cliff (-10)
+    # Value future rewards but add some noise so the safer route is optimal.
+    return 0.9, 0.2, 0.0
+
+def question2e():
+    # Avoid both exits and the cliff (live forever)
+    # Positive step reward makes looping preferable to any terminal payoff.
+    return 0.9, 0.0, 1.0
+
 if __name__ == '__main__':
     print('Answers to analysis questions:')
     import analysis
