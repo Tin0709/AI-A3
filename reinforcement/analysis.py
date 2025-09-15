@@ -69,6 +69,8 @@ def question2e():
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
+
+# -------------------- Question 2 ------------------#
 def question2a():
     # Prefer the close exit (+1), risking the cliff (-10)
     # Make the agent short-sighted and deterministic.
@@ -93,7 +95,7 @@ def question2e():
     # Avoid both exits and the cliff (live forever)
     # Positive step reward makes looping preferable to any terminal payoff.
     return 0.9, 0.0, 1.0
-
+# -------------------- Question 2 ------------------#
 if __name__ == '__main__':
     print('Answers to analysis questions:')
     import analysis
